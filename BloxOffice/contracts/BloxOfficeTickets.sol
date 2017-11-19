@@ -30,6 +30,7 @@ contract BloxOfficeTickets {
         uint forSalePrice;
         bool forSale;
         bytes32 ID;
+        address issuer;
     }
 
     BloxOfficeWallet private allWallets;
@@ -65,6 +66,7 @@ contract BloxOfficeTickets {
 		tickets[_ID].forSalePrice = _faceValue;
 		tickets[_ID].forSale = false;
 		tickets[_ID].ID = _ID;
+		tickets[_ID].issuer = msg.sender;
 
 
 		TicketCreated(_seat, _eventName, msg.sender);
@@ -92,7 +94,8 @@ contract BloxOfficeTickets {
 
 	function transferTicket(uint _seat, string _eventName) isLegitimateSale(_seat, _eventName) public returns(bool){
 		bytes32 _ID = sha3(_seat, _eventName);
-		allWallets.sendCash(tickets[_ID].forSalePrice ,tickets[_ID].owner, msg.sender);
+		allWallets.sendCash(tickets[_ID].lastSoldPrice ,tickets[_ID].owner, msg.sender);
+		allWallets.sendCash(tickets[_ID].forSalePrice - tickets[_ID].lastSoldPrice ,tickets[_ID].owner, msg.sender);
 		tickets[_ID].owner = msg.sender;
 		tickets[_ID].lastSoldPrice = tickets[_ID].forSalePrice;
 		tickets[_ID].forSale = false;
@@ -100,4 +103,6 @@ contract BloxOfficeTickets {
 		TicketTransfered(_ID, msg.sender, tickets[_ID].owner);
 		return true;
 	}
+
+	function 
 }
