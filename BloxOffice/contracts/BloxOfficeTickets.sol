@@ -16,6 +16,7 @@ contract BloxOfficeTickets {
     event TicketListed(bytes32 ID, address owner);
     event TicketUnlisted(bytes32 ID, address owner);
     event TicketTransfered(bytes32 ID, address indexed newOwner, address indexed oldOwner);
+    event SalePriceUpdated(bytes32 ID, address owner);
     /* Events - END */
 
 
@@ -73,6 +74,15 @@ contract BloxOfficeTickets {
 		return true;
 	}
 
+	function setSalePrice(uint _seat, string _eventName, uint _price) public returns(bool){
+		bytes32 _ID = sha3(_seat, _eventName);
+		require(tickets[_ID].owner == msg.sender);
+		tickets[_ID].forSalePrice = _price;
+
+		SalePriceUpdated(_ID, msg.sender);
+		return true;
+	}
+
 	function upForSale(uint _seat, string _eventName) public returns(bool){
 		bytes32 _ID = sha3(_seat, _eventName);
 		require(tickets[_ID].owner == msg.sender);
@@ -86,7 +96,6 @@ contract BloxOfficeTickets {
 		bytes32 _ID = sha3(_seat, _eventName);
 		require(tickets[_ID].owner == msg.sender);
 		tickets[_ID].forSale = false;
-
 
 		TicketUnlisted(_ID, msg.sender);
 		return true;
